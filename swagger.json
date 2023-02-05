@@ -22,7 +22,15 @@
     },
     {
       "name": "Products",
-      "description": "API for user to create products"
+      "description": "API for user to create/get products"
+    },
+    {
+      "name": "Payments",
+      "description": "API for user to create/get payments"
+    },
+    {
+      "name": "Address",
+      "description": "API for user to create/get addresses"
     }
   ],
   "schemes": ["http"],
@@ -451,6 +459,222 @@
                 }
               }
             }
+          }
+        }
+      }
+    },
+    "/payment": {
+      "post": {
+        "tags": ["Payments"],
+        "summary": "Create a new payment method",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "name": "type",
+            "in": "body",
+            "description": "Type of the payment method",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Type of payment method"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successfully created payment method",
+            "schema": {
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "_id": {
+                  "type": "string"
+                },
+                "createdAt": {
+                  "type": "string"
+                },
+                "updatedAt": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "properties": {
+                "message": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "get": {
+        "tags": ["Payments"],
+        "summary": "Get all payment methods",
+        "operationId": "getPaymentMethods",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "properties": {
+                "paymentMethods": {
+                  "type": "array",
+                  "items": {
+                    "properties": {
+                      "name": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/address": {
+      "post": {
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "description": "Add address information",
+        "responses": {
+          "200": {
+            "description": "Address added successfully",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "unitNo": {
+                  "type": "string"
+                },
+                "street": {
+                  "type": "string"
+                },
+                "city": {
+                  "type": "string"
+                },
+                "state": {
+                  "type": "string"
+                },
+                "zipCode": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Address information",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "unitNo": {
+                  "type": "string"
+                },
+                "street": {
+                  "type": "string"
+                },
+                "city": {
+                  "type": "string"
+                },
+                "state": {
+                  "type": "string"
+                },
+                "zipCode": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "tags": ["Address"]
+      },
+      "get": {
+        "tags": ["Address"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Get addresses of a user",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "addresses": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "user": {
+                        "type": "string"
+                      },
+                      "unitNo": {
+                        "type": "string"
+                      },
+                      "street": {
+                        "type": "string"
+                      },
+                      "city": {
+                        "type": "string"
+                      },
+                      "state": {
+                        "type": "string"
+                      },
+                      "zipCode": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error"
           }
         }
       }

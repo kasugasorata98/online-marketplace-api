@@ -1,13 +1,16 @@
-import mongoose, { Schema, Document } from "mongoose";
+import mongoose, { Schema, Document, Types } from "mongoose";
+import { User } from "./Users.model";
 
 export interface Address extends Document {
+  unitNo: string;
   street: string;
   city: string;
   state: string;
   zipCode: string;
+  user: Types.ObjectId | User;
 }
 
-const AddressSchema: Schema = new Schema(
+const AddressSchema: Schema = new Schema<Address>(
   {
     unitNo: {
       type: String,
@@ -27,6 +30,11 @@ const AddressSchema: Schema = new Schema(
     },
     zipCode: {
       type: String,
+      required: true,
+    },
+    user: {
+      type: Types.ObjectId,
+      ref: "User",
       required: true,
     },
   },
