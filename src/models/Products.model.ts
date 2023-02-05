@@ -9,30 +9,34 @@ export interface Product extends Document {
   store: Types.ObjectId | Store;
 }
 
-const ProductSchema: Schema = new Schema({
-  title: {
-    type: String,
-    required: true,
-    unique: true,
-  },
-  price: {
-    type: Number,
-    required: true,
-  },
-  images: [
-    {
+const ProductSchema: Schema = new Schema(
+  {
+    title: {
       type: String,
+      required: true,
     },
-  ],
-  details: {
-    type: String,
-    required: true,
+    price: {
+      type: Number,
+      required: true,
+    },
+    images: [
+      {
+        type: String,
+      },
+    ],
+    details: {
+      type: String,
+      required: true,
+    },
+    store: {
+      type: Types.ObjectId,
+      ref: "Store",
+      required: true,
+    },
   },
-  store: {
-    type: Types.ObjectId,
-    ref: "Store",
-    required: true,
-  },
-});
+  {
+    timestamps: true,
+  }
+);
 
 export default mongoose.model<Product>("Product", ProductSchema);

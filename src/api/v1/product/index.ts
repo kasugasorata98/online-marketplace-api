@@ -3,26 +3,35 @@ import ProductsModel from "../../../models/Products.model";
 import StoresModel from "../../../models/Stores.model";
 import { validateJwt } from "../../../utils";
 const router = express.Router();
-const ITEMS_PER_PAGE = 10;
+
 router.get("/products", validateJwt, async (req: Request, res: Response) => {
+  const searchQuery = req.query.search;
   const page = req.query.page ? +req.query.page : 1;
+  const limit = req.query.limit ? +req.query.limit : 10;
+
   try {
-    const totalItems = await ProductsModel.countDocuments();
-    const products = await ProductsModel.find()
-      .skip((page - 1) * ITEMS_PER_PAGE)
-      .limit(ITEMS_PER_PAGE);
-    res.status(200).send({
-      products,
-      totalItems,
-      currentPage: page,
-      hasNextPage: ITEMS_PER_PAGE * page < totalItems,
-      hasPreviousPage: page > 1,
-      nextPage: page + 1,
-      previousPage: page - 1,
-      lastPage: Math.ceil(totalItems / ITEMS_PER_PAGE),
-    });
+    let products;
+
+    if (!searchQuery) {
+      products = await ProductsModel.find()
+        .populate("store", "-products")
+        .skip((page - 1) * limit)
+        .limit(limit);
+    } else {
+      products = await ProductsModel.find({
+        $or: [
+          { title: { $regex: searchQuery, $options: "i" } },
+          { details: { $regex: searchQuery, $options: "i" } },
+        ],
+      })
+        .populate("store", "-products")
+        .skip((page - 1) * limit)
+        .limit(limit);
+    }
+
+    return res.status(200).json({ products });
   } catch (error: any) {
-    res.status(500).send({ error: error.message });
+    return res.status(500).json({ error: error.message });
   }
 });
 
@@ -36,14 +45,32 @@ router.post("/products", validateJwt, async (req: Request, res: Response) => {
     const newProduct = await ProductsModel.create({
       title: req.body.title,
       price: req.body.price,
-      images: req.body.images,
       details: req.body.details,
       store: store._id,
     });
+    newProduct.images.push(req.body.image);
+    await newProduct.save();
+    store.products.push(newProduct._id);
+    await store.save();
     res.status(201).json(newProduct);
   } catch (error: any) {
     res.status(400).json({ message: error.message });
   }
 });
+
+router.delete(
+  "/products/:id",
+  validateJwt,
+  async (req: Request, res: Response) => {
+    const { id } = req.params;
+    try {
+      const product = await ProductsModel.findByIdAndDelete(id);
+      if (!product) return res.status(404).json({ error: "Product not found" });
+      res.json({ message: "Product deleted successfully" });
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  }
+);
 
 export default router;

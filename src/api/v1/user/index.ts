@@ -3,11 +3,11 @@ import UsersModel from "../../../models/Users.model";
 const router = express.Router();
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import { validateJwt } from "../../../utils";
 
 router.post("/register", async (req: Request, res: Response) => {
   try {
     const { username, password } = req.body;
-
     const existingUser = await UsersModel.findOne({ username });
     if (existingUser) {
       return res.status(400).json({ message: "Username already exists" });
@@ -36,7 +36,6 @@ router.post("/register", async (req: Request, res: Response) => {
 router.post("/login", async (req: Request, res: Response) => {
   try {
     const { username, password } = req.body;
-
     const user = await UsersModel.findOne({ username });
     if (!user) {
       return res
@@ -58,6 +57,17 @@ router.post("/login", async (req: Request, res: Response) => {
     res.status(200).json({ token });
   } catch (error: any) {
     res.status(400).json({ message: error.message });
+  }
+});
+
+router.get("/user", validateJwt, async (req: any, res: Response) => {
+  try {
+    const user = await UsersModel.findOne({ _id: req.userId }).select(
+      "-password"
+    );
+    res.json(user);
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
   }
 });
 

@@ -7,27 +7,32 @@ export interface Address extends Document {
   zipCode: string;
 }
 
-const AddressSchema: Schema = new Schema({
-  unitNo: {
-    type: String,
-    required: true,
+const AddressSchema: Schema = new Schema(
+  {
+    unitNo: {
+      type: String,
+      required: true,
+    },
+    street: {
+      type: String,
+      required: true,
+    },
+    city: {
+      type: String,
+      required: true,
+    },
+    state: {
+      type: String,
+      required: true,
+    },
+    zipCode: {
+      type: String,
+      required: true,
+    },
   },
-  street: {
-    type: String,
-    required: true,
-  },
-  city: {
-    type: String,
-    required: true,
-  },
-  state: {
-    type: String,
-    required: true,
-  },
-  zipCode: {
-    type: String,
-    required: true,
-  },
-});
+  {
+    timestamps: true,
+  }
+);
 
 export default mongoose.model<Address>("Address", AddressSchema);

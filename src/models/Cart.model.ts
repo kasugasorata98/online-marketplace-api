@@ -9,26 +9,31 @@ export interface Cart extends Document {
   user: Types.ObjectId | User;
 }
 
-const CartSchema: Schema = new Schema({
-  quantity: {
-    type: Number,
-    required: true,
+const CartSchema: Schema = new Schema(
+  {
+    quantity: {
+      type: Number,
+      required: true,
+    },
+    shippingMethod: {
+      type: String,
+      enum: ["standard", "on-demand"],
+      required: true,
+    },
+    product: {
+      type: Types.ObjectId,
+      ref: "Product",
+      required: true,
+    },
+    user: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
   },
-  shippingMethod: {
-    type: String,
-    enum: ["standard", "on-demand"],
-    required: true,
-  },
-  product: {
-    type: Types.ObjectId,
-    ref: "Product",
-    required: true,
-  },
-  user: {
-    type: Schema.Types.ObjectId,
-    ref: "User",
-    required: true,
-  },
-});
+  {
+    timestamps: true,
+  }
+);
 
 export default mongoose.model<Cart>("Cart", CartSchema);
