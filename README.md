@@ -33,6 +33,6 @@ npm run start
 ## API Requirements
 
 - .env file included
-- Access the API documentation in localhost:3000/.docs
+- Access the API documentation in [Swagger UI](http://localhost:3000/.docs/)
 - Some api requires an Authentication header example, 'Bearer {token}'
-- Insert the Bearer token into an Authenticate button at the top right of the Swagger UI.
+- Insert the Bearer token into an Authorize button at the top right of the Swagger UI.
