@@ -36,3 +36,10 @@ npm run start
 - Access the API documentation in [Swagger UI](http://localhost:3000/.docs/)
 - Some api requires an Authentication header example, 'Bearer {token}'
 - Insert the Bearer token into an Authorize button at the top right of the Swagger UI.
+
+## Steps Required to Enable all API
+
+1. Create a user
+2. Create a store (for this example, the user is also an admin)
+3. Create a product
+4. The rest of the api can then be accessible
