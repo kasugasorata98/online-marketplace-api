@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response } from "express";
+import { NextFunction, Response } from "express";
 import * as jwt from "jsonwebtoken";
 export const validateJwt = (req: any, res: Response, next: NextFunction) => {
   const authorizationHeader = req.headers.authorization;

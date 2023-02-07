@@ -3,12 +3,13 @@ import CartModel from "../../../models/Cart.model";
 import { validateJwt } from "../../../utils";
 const router = express.Router();
 
-router.post("/cart", validateJwt, async (req: Request, res: Response) => {
+router.post("/cart", validateJwt, async (req: any, res: Response) => {
   try {
     const cart = await CartModel.create({
       quantity: req.body.quantity,
       shippingMethod: req.body.shippingMethod,
       product: req.body.product,
+      user: req.userId,
     });
     res.json({ message: "Cart entry created", cart });
   } catch (error: any) {
@@ -34,7 +35,7 @@ router.patch("/cart/:id", validateJwt, async (req: any, res: Response) => {
     return res.status(404).json({ error: "Cart not found" });
   }
 
-  if (cart.user !== req.userId) {
+  if (cart.user.toString() !== req.userId) {
     return res.status(401).json({ error: "Unauthorized access" });
   }
 
@@ -58,7 +59,7 @@ router.delete("/cart/:id", validateJwt, async (req: any, res: Response) => {
   try {
     const cart = await CartModel.findById(req.params.id);
     if (!cart) return res.status(404).json("Cart entry not found");
-    if (cart.user !== req.userId)
+    if (cart.user.toString() !== req.userId)
       return res.status(401).json("Unauthorized access");
     await cart.remove();
     res.status(204).json();

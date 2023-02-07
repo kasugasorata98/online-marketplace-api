@@ -5,11 +5,10 @@ import swaggerUi from "swagger-ui-express";
 import swaggerDocument from "./swagger.json";
 import glob from "glob";
 import MongooseClient from "./src/lib/MongooseClient";
-
-dotenv.config();
 const app = express();
+dotenv.config();
 
-async function main() {
+export async function setUpServer(app: express.Express) {
   app.use(cors());
   app.use(express.json());
   app.use(
@@ -30,7 +29,7 @@ async function main() {
     app.use("/api/v1", route);
   });
 
-  app.listen(process.env.PORT || 3000, () => {
+  const httpServer = app.listen(process.env.PORT || 3000, () => {
     console.log("App listening at port: " + process.env.PORT);
     MongooseClient.connect(process.env.MONGODB_CONNECTION_STRING || "")
       .then(async (res) => {
@@ -40,5 +39,9 @@ async function main() {
         console.log(err);
       });
   });
+  return {
+    app,
+    httpServer,
+  };
 }
-main();
+setUpServer(app);

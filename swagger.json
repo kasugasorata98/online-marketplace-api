@@ -14,23 +14,27 @@
   "tags": [
     {
       "name": "Users",
-      "description": "API for users in the system"
+      "description": "API for users"
     },
     {
       "name": "Stores",
-      "description": "API for user to create stores"
+      "description": "API for store"
     },
     {
       "name": "Products",
-      "description": "API for user to create/get products"
+      "description": "API for product"
     },
     {
       "name": "Payments",
-      "description": "API for user to create/get payments"
+      "description": "API for payment"
     },
     {
       "name": "Address",
-      "description": "API for user to create/get addresses"
+      "description": "API for address"
+    },
+    {
+      "name": "Carts",
+      "description": "API for cart"
     }
   ],
   "schemes": ["http"],
@@ -672,6 +676,226 @@
                 }
               }
             }
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/cart": {
+      "post": {
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "description": "Create a new cart entry",
+        "responses": {
+          "200": {
+            "description": "Cart entry created",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "quantity": {
+                  "type": "integer"
+                },
+                "shippingMethod": {
+                  "type": "string"
+                },
+                "product": {
+                  "type": "string"
+                },
+                "user": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Address information",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "quantity": {
+                  "type": "integer"
+                },
+                "shippingMethod": {
+                  "type": "string",
+                  "enum": ["on-demand", "standard"]
+                },
+                "product": {
+                  "type": "string",
+                  "description": "Product ID"
+                }
+              }
+            }
+          }
+        ],
+        "tags": ["Carts"]
+      },
+      "get": {
+        "tags": ["Carts"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Get the user's cart",
+        "responses": {
+          "200": {
+            "description": "Cart information",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "carts": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "quantity": {
+                            "type": "number"
+                          },
+                          "shippingMethod": {
+                            "type": "string"
+                          },
+                          "product": {
+                            "type": "object",
+                            "properties": {
+                              "name": {
+                                "type": "string"
+                              },
+                              "description": {
+                                "type": "string"
+                              },
+                              "price": {
+                                "type": "number"
+                              },
+                              "imageUrl": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          "user": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/cart/{id}": {
+      "patch": {
+        "tags": ["Carts"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "description": "Update the quantity/shipping method of a specific cart entry",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the cart",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "quantity": {
+                  "type": "integer"
+                },
+                "shippingMethod": {
+                  "type": "string",
+                  "enum": ["on-demand", "standard"]
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation"
+          },
+          "400": {
+            "description": "Error updating cart"
+          },
+          "401": {
+            "description": "Unauthorized access"
+          },
+          "404": {
+            "description": "Cart not found"
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Carts"],
+        "security": [{ "bearerAuth": [] }],
+        "summary": "Delete a cart entry",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID of the cart entry to delete",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful deletion of the cart entry"
+          },
+          "401": {
+            "description": "Unauthorized access"
+          },
+          "404": {
+            "description": "Cart entry not found"
           },
           "500": {
             "description": "Server error"
